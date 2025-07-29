@@ -4,20 +4,24 @@ library(ComplexHeatmap)
 library(dplyr)
 library(circlize)
 library(glue)
-library("gridExtra")
+library(gridExtra)
 library(purrr)
 library(stringr)
 
 make_gene_heatmap2 <- function(df,
+                               gene_df,
                                dose,
                                name,
                                category_names = NULL,
+                               filter_df_by_dose = TRUE,
                                rownames_fs = 4,
                                rowtitle_fs = 14){
   col_fun = colorRamp2(c(-2,0,2), c("blue", "white", "red"))
   ### Get all Genes that participate in Hypoxia, Aptosis, DNA Repair, and Epigenetics
   if (is.null(category_names)){
-    category_names = unique(df$main_function)[-1]
+    category_names = unique(df$main_function)
+    print(category_names)
+    print(unique(df$main_function))
   }
   categories = list()
   for (category in category_names){
@@ -27,15 +31,16 @@ make_gene_heatmap2 <- function(df,
   ht_list = NULL
   for (category in category_names){
     filtered_df = df[df$pathway %in% categories[[category]],]
-    filtered_df = filtered_df[filtered_df$DoseComparison == dose, ]
-    if (dim(filtered_df)[[1]] == 0) {
-      print(category)
-      next
+    if (filter_df_by_dose){
+      filtered_df = filtered_df[filtered_df$DoseComparison == dose, ]
     }
     gene_list = unique(strsplit(paste(filtered_df[,"leadingEdge"], collapse = ","), ","))[[1]]
     formatted_gene_list = map_chr(gene_list, str_trim)
-    gene_df = data.frame(read.delim("~/Programming/khoi-modrek-lab/seurat-pipeline/rna_marker_concatenated.txt", sep = " "))
-    filtered_gene_df = gene_df[gene_df$gene %in% gene_list & gene_df$DoseComparison == dose & gene_df$p_val < .05,] 
+    filtered_gene_df = gene_df[gene_df$gene %in% formatted_gene_list & gene_df$DoseComparison == dose & gene_df$p_val < .05,] 
+    if (nrow(filtered_gene_df) == 0){
+      print(glue("No genes were found in {category}"))
+      next
+    } 
     filtered_gene_df = dcast(filtered_gene_df, gene ~  Cluster, value.var = "avg_log2FC", fill = 0)
     rownames = filtered_gene_df[["gene"]]
     required_columns <- c("0", "1", "2", "3")
@@ -96,6 +101,10 @@ if (sys.nframe() == 0){
   all_df = data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/all/combinedpathway_withmore_mainfunction.txt", sep = "\t"))
   unique_df = data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/unique/unique_combineddepathway_with_mainfunction.txt", sep = "\t"))
   common_df = data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/common/common_combineddepathway_with_mainfunction.txt", sep = "\t"))
+  
+  all_gene_df = data.frame(read.delim("data/all/rna_marker_concatenated_output.txt", sep = " "))
+  unique_gene_df <- data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/unique/unique_rna_marker_concatenated_output.txt", sep = " "))
+  common_gene_df <- data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/common/common_rna_marker_concatenated_output.txt", sep = " "))
 
   ### Filter By P value less that 0.5
   all_df = all_df[all_df$pval < 0.05, ] %>% filter(!is.na(Cluster))
@@ -108,12 +117,12 @@ if (sys.nframe() == 0){
   common_df = common_df[!is.na(common_df$NES) | !is.na(common_df$pval), ]
 
   pdf("/Users/blakechang/Programming/khoi-modrek-lab/figures/output/genes_heatmap.pdf", height = 11, width = 15)
-  make_gene_heatmap2(all_df, "2Gy_vs_0Gy", "all", category_names, rownames_fs = 4)
-  make_gene_heatmap2(all_df, "6Gy_vs_0Gy", "all", category_names, rownames_fs = 3)
-  make_gene_heatmap2(unique_df, "2Gy_vs_0Gy", "unique", category_names, rownames_fs = 4)
-  make_gene_heatmap2(unique_df, "6Gy_vs_0Gy", "unique", category_names, rownames_fs = 3)
+  draw(make_gene_heatmap2(all_df, all_gene_df, "2Gy_vs_0Gy", "all", category_names, rownames_fs = 4))
+  draw(make_gene_heatmap2(all_df, all_gene_df, "6Gy_vs_0Gy", "all", category_names, rownames_fs = 3))
+  draw(make_gene_heatmap2(unique_df, unique_gene_df, "2Gy_vs_0Gy", "unique", category_names, rownames_fs = 4))
+  draw(make_gene_heatmap2(unique_df, unique_gene_df, "6Gy_vs_0Gy", "unique", category_names, rownames_fs = 3))
 
-  make_gene_heatmap2(common_df, "2Gy_vs_0Gy", "common", category_names, rownames_fs = 4)
-  make_gene_heatmap2(common_df, "6Gy_vs_0Gy", "common", category_names, rownames_fs = 3)
+  draw(make_gene_heatmap2(common_df, common_gene_df, "2Gy_vs_0Gy", "common", category_names, rownames_fs = 4))
+  draw(make_gene_heatmap2(common_df, common_gene_df, "6Gy_vs_0Gy", "common", category_names, rownames_fs = 3))
   dev.off()
 }
