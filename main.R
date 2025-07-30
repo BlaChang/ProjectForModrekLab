@@ -44,25 +44,26 @@ if (sys.nframe() == 0){
   venn_plot[[5]] = venn_diagram(c(0,1,2,3)) 
   venn = (venn_plot[[1]] | venn_plot[[2]] | venn_plot[[3]] | venn_plot[[4]] | venn_plot[[5]])  
   plot_list = list()
-  plot_list[[1]] = grid.grabExpr(draw(create_pathway_heatmap(unique_df, dose = "2Gy_vs_0Gy","Unique", category_names, other = TRUE, rownames_fs = 5, rowtitle_fs = 6)))
-  plot_list[[2]] = grid.grabExpr(draw(make_gene_heatmap3(unique_df, all_gene_df, "2Gy_vs_0Gy", "Unique", category_names, rownames_fs = 12, rowtitle_fs = 12)))
-  plot_list[[3]] = grid.grabExpr(draw(create_pathway_heatmap(unique_df, dose = "6Gy_vs_0Gy","Unique", category_names, other = TRUE, rownames_fs = 5, rowtitle_fs = 6)))
-  plot_list[[4]] = grid.grabExpr(draw(make_gene_heatmap3(unique_df, all_gene_df, "6Gy_vs_0Gy", "Unique", category_names, rownames_fs = 10)))
-  plot_list[[5]] = grid.grabExpr(draw(create_pathway_heatmap(common_df, dose = "2Gy_vs_0Gy","Common", category_names, other = TRUE, rownames_fs = 5, rowtitle_fs = 6)))
-  plot_list[[6]] = grid.grabExpr(draw(make_gene_heatmap3(common_df, all_gene_df, "2Gy_vs_0Gy", "Common", category_names, rownames_fs = 12, rowtitle_fs = 12)))
-  plot_list[[7]] = grid.grabExpr(draw(create_pathway_heatmap(common_df, dose = "6Gy_vs_0Gy","Common", category_names, other = TRUE, rownames_fs = 5, rowtitle_fs = 6)))
-  plot_list[[8]] = grid.grabExpr(draw(make_gene_heatmap3(common_df, all_gene_df, "6Gy_vs_0Gy", "Common", category_names, rownames_fs = 12, rowtitle_fs = 12)))
+  plot_list[[1]] = grid.grabExpr(draw(create_pathway_heatmap(unique_df, dose = "2Gy_vs_0Gy","Unique", category_names, other = TRUE, rownames_fs = 5, rowtitle_fs = 6), heatmap_legend_side = "bottom"))
+  plot_list[[2]] = grid.grabExpr(draw(make_gene_heatmap3(unique_df, all_gene_df, "2Gy_vs_0Gy", "Unique", category_names, rownames_fs = 5, rowtitle_fs = 6)))
+  plot_list[[3]] = grid.grabExpr(draw(create_pathway_heatmap(unique_df, dose = "6Gy_vs_0Gy","Unique", category_names, other = TRUE, rownames_fs = 5, rowtitle_fs = 6), heatmap_legend_side = "bottom"))
+  plot_list[[4]] = grid.grabExpr(draw(make_gene_heatmap3(unique_df, all_gene_df, "6Gy_vs_0Gy", "Unique", category_names, rownames_fs = 5, rowtitle_fs = 6)))
+  plot_list[[5]] = grid.grabExpr(draw(create_pathway_heatmap(common_df, dose = "2Gy_vs_0Gy","Common", category_names, other = TRUE, rownames_fs = 5, rowtitle_fs = 6), heatmap_legend_side = "bottom"))
+  plot_list[[6]] = grid.grabExpr(draw(make_gene_heatmap3(common_df, all_gene_df, "2Gy_vs_0Gy", "Common", category_names, rownames_fs = 5, rowtitle_fs = 6)))
+  plot_list[[7]] = grid.grabExpr(draw(create_pathway_heatmap(common_df, dose = "6Gy_vs_0Gy","Common", category_names, other = TRUE, rownames_fs = 5, rowtitle_fs = 6), heatmap_legend_side = "bottom"))
+  plot_list[[8]] = grid.grabExpr(draw(make_gene_heatmap3(common_df, all_gene_df, "6Gy_vs_0Gy", "Common", category_names, rownames_fs = 5, rowtitle_fs = 6)))
 
   figure = venn /
-    wrap_plots(plot_list[[1]], plot_list[[2]], ncol = 2) /
-    wrap_plots(plot_list[[3]], plot_list[[4]], ncol = 2) /
-    wrap_plots(plot_list[[5]], plot_list[[6]], ncol = 2) /
-    wrap_plots(plot_list[[7]], plot_list[[8]], ncol = 2) 
+    wrap_plots(plot_list[[1]], plot_list[[2]], ncol = 2, widths = c(1.5,1)) /
+    wrap_plots(plot_list[[3]], plot_list[[4]], ncol = 2, widths = c(1.5,1)) /
+    wrap_plots(plot_list[[5]], plot_list[[6]], ncol = 2, widths = c(1.5,1)) /
+    wrap_plots(plot_list[[7]], plot_list[[8]], ncol = 2, widths = c(1.5,1)) + plot_layout(heights = c(0.6,0.5,1,0.8,0.8)) 
+
   ggsave("/Users/blakechang/Programming/khoi-modrek-lab/figures/output/main.pdf",device = "pdf", plot = figure, width = 8, height = 11.5, units = "in", dpi = 300)
   
   
 
   
 
-  ###Create Figure 4 ----------------------------------------------------------------------
+  ###Create Figure 4 --------------------------------------------------------------------
 }

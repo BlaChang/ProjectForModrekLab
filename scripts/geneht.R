@@ -15,7 +15,8 @@ make_gene_heatmap2 <- function(df,
                                category_names = NULL,
                                filter_df_by_dose = TRUE,
                                rownames_fs = 4,
-                               rowtitle_fs = 14){
+                               rowtitle_fs = 14,
+                               title_fs = 8){
   col_fun = colorRamp2(c(-2,0,2), c("blue", "white", "red"))
   ### Get all Genes that participate in Hypoxia, Aptosis, DNA Repair, and Epigenetics
   if (is.null(category_names)){
@@ -102,7 +103,8 @@ make_gene_heatmap3 <- function(df,
                                category_names = NULL,
                                filter_df_by_dose = TRUE,
                                rownames_fs = 4,
-                               rowtitle_fs = 14){
+                               rowtitle_fs = 14,
+                               title_fs = 8){
   col_fun = colorRamp2(c(-2,0,2), c("blue", "white", "red"))
   ### Get all Genes that participate in Hypoxia, Aptosis, DNA Repair, and Epigenetics
   if (is.null(category_names)){
@@ -194,12 +196,16 @@ make_gene_heatmap3 <- function(df,
                                                            gp = gpar(fontsize = 12)
                                                            ),
                       show_row_names = FALSE,
+                      show_row_dend = FALSE,
                       right_annotation = rowAnno,
                       row_title_gp = gpar(fontsize = rowtitle_fs),
                       row_title_rot = 0 ,
                       column_title = glue("{dose} Differential Expression for {name} Enriched pathways"),
+                      column_title_gp = gpar(fontsize = title_fs),
                       row_title = glue("{category}"),
                       cluster_rows = TRUE,
+                      width = ncol(mat)*unit(5, "mm"), 
+                      height = nrow(mat)*unit(2, "mm"),
                       border_gp = gpar(col = "black", lty = 2),
                       col = col_fun)  %v% ht_list 
   }
@@ -212,11 +218,11 @@ pick_important_genes = function(gene_df){
   #positively regulated genes
   positive_gene_df = gene_df[gene_df$avg_log2FC > 0, ]
   positive_gene_df = positive_gene_df[order(positive_gene_df$avg_log2FC, decreasing = TRUE), ]
-  positive_genes = head(positive_gene_df, 2)$gene
+  positive_genes = head(positive_gene_df, 1)$gene
 
   negative_gene_df = gene_df[gene_df$avg_log2FC < 0, ]
   negative_gene_df = negative_gene_df[order(negative_gene_df$avg_log2FC, decreasing = FALSE), ]
-  negative_genes = head(negative_gene_df, 2)$gene
+  negative_genes = head(negative_gene_df, 1)$gene
   
   return(c(positive_genes, negative_genes))
 }

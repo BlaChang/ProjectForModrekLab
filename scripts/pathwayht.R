@@ -14,7 +14,8 @@ create_pathway_heatmap = function(df,
                                    other = FALSE,
                                    cluster_rows = TRUE,
                                    rownames_fs = 14,
-                                   rowtitle_fs = 14) {
+                                   rowtitle_fs = 14,
+                                   title_fs = 8) {
   if (class(df) == "list") {
     df = df[[1]]
     dose = dose[[1]]
@@ -58,10 +59,13 @@ create_pathway_heatmap = function(df,
     mat[is.na(mat)] = 0
 
     if (category == "Extracellular Matrix Formation") category  = "ECM Formation"
+
     ht_list = Heatmap(mat,
                       cluster_columns = FALSE,
                       cluster_rows = cluster_rows,
                       show_heatmap_legend = FALSE,
+                      width = ncol(mat)*unit(5, "mm"), 
+                      height = nrow(mat)*unit(1.5, "mm"),
                       show_row_dend= FALSE,
                       row_title = glue("{category}"),
                       row_names_gp = gpar(fontsize = rownames_fs),
@@ -71,11 +75,11 @@ create_pathway_heatmap = function(df,
                                                            ),
                       row_title_gp = gpar(fontsize = rowtitle_fs),
                       column_title = glue("{name} {dose} Enriched Pathways"),
+                      column_title_gp = gpar(fontsize = title_fs),
                       row_title_rot = 0 ,
                       border_gp = gpar(col = "black", lty = 2),
                       col = col_fun) %v% ht_list
   }
-
   return(ht_list)
 }
 
