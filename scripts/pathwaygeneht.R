@@ -7,9 +7,9 @@ source("/Users/blakechang/Programming/khoi-modrek-lab/figures/scripts/venndiagra
 if (sys.nframe() == 0){
 
   ### Load in Data
-  all_df <- data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/all/combinedpathway_withmore_mainfunction.txt", sep = "\t"))
-  unique_df = data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/unique/unique_combineddepathway_with_mainfunction.txt", sep = "\t"))
-  common_df = data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/common/common_combineddepathway_with_mainfunction.txt", sep = "\t"))
+  all_df <- data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/all/combinedpathway_with_mainfunction.txt", sep = "\t"))
+  unique_df = data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/unique/unique_combinedpathway_with_mainfunction.txt", sep = "\t"))
+  common_df = data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/common/common_combinedpathway_with_mainfunction.txt", sep = "\t"))
 
   ### Filter By P value less that 0.5
   all_df = all_df[all_df$pval < 0.05, ] %>% filter(!is.na(Cluster))

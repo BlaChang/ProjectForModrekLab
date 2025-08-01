@@ -2,3 +2,5 @@
 data/**
 .Rdata
 .Rhistory
+**/Rplots.pdf
+
