@@ -34,7 +34,8 @@ make_gene_heatmap2 <- function(df,
                                name,
                                category_names = NULL,
                                filter_df_by_dose = TRUE,
-                               gpar = list(rownames_fs = 14, rowtitle_fs = 14, title_fs = 8, width = unit(10, "mm"), height = unit(4.5, "mm"), cluster_rows = TRUE)){
+                               gpar = list(rownames_fs = 14, rowtitle_fs = 14, title_fs = 8, colnames_fs = 14,
+                                           width = unit(10, "mm"), height = unit(4.5, "mm"), cluster_rows = TRUE)){
   col_fun = colorRamp2(c(-2,0,2), c("blue", "white", "red"))
   ### Get all Genes that participate in Hypoxia, Aptosis, DNA Repair, and Epigenetics
   if (is.null(category_names)){
@@ -98,6 +99,7 @@ make_gene_heatmap2 <- function(df,
                       row_title_gp = gpar(fontsize = gpar$rowtitle_fs),
                       row_title_rot = 0 ,
                       column_title = glue("{dose} Differential Expression for {name} Enriched pathways"),
+                      column_names_gp = gpar(fontsize = gpar$colnames_fs),
                       row_title = glue({category}),
                       cluster_rows = TRUE,
                       border_gp = gpar(col = "black", lty = 2),
@@ -115,7 +117,8 @@ make_gene_heatmap3 <- function(df,
                                category_names = NULL,
                                filter_df_by_dose = TRUE,
                                other = FALSE,
-                               gpar = list(rownames_fs = 14, rowtitle_fs = 14, title_fs = 8, cell_width = unit(10, "mm"), cell_height = unit(4.5, "mm"), cluster_rows = TRUE)){
+                               gpar = list(rownames_fs = 14, rowtitle_fs = 14, title_fs = 8, colnames_fs = 14,
+                                           cell_width = unit(10, "mm"), cell_height = unit(4.5, "mm"), cluster_rows = TRUE)){
   col_fun = colorRamp2(c(-2,0,2), c("blue", "white", "red"))
   ### Get all Genes that participate in Hypoxia, Aptosis, DNA Repair, and Epigenetics
   if (is.null(category_names)){
@@ -214,6 +217,7 @@ make_gene_heatmap3 <- function(df,
                       row_title_rot = 0,
                       column_title = glue("{dose} Differential Expression for {name} Enriched pathways"),
                       column_title_gp = gpar(fontsize = gpar$title_fs),
+                      column_names_gp = gpar(fontsize = gpar$colnames_fs),
                       row_title = glue("{category}"),
                       cluster_rows = TRUE,
                       width = ncol(mat)* gpar$cell_width, 

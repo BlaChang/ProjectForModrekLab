@@ -34,7 +34,7 @@ if (sys.nframe() == 0){
   unique_df = unique_df[!is.na(unique_df$NES) | !is.na(unique_df$pval), ]
   common_df = common_df[!is.na(common_df$NES) | !is.na(common_df$pval), ]
 
-  category_names = c("Apoptosis", "DNA Repair", "Epigenetics", "Extracellular Matrix Formation", "Immune System")
+  category_names = c("Apoptosis", "DNA Repair", "Epigenetics", "Extracellular Matrix Formation", "Innate Immune System", "Adaptive Immune System", "Cytokine Signalling Immune System")
 
   ###Create Figure 2 ----------------------------------------------------------------------
   venn_plot = list()
@@ -47,13 +47,13 @@ if (sys.nframe() == 0){
   ght_list = list()
 
 
-  pht_gpar = list(rownames_fs = 5, rowtitle_fs = 6, cell_width = unit(1.5, "mm"), cell_height = unit(1.5, "mm"), cluster_rows = TRUE)
+  pht_gpar = list(rownames_fs = 5, rowtitle_fs = 6, title_fs = 6, colnames_fs = 5, cell_width = unit(1.5, "mm"), cell_height = unit(1.5, "mm"), cluster_rows = TRUE)
   pht_list[[1]] = grid.grabExpr(draw(create_pathway_heatmap(unique_df, "2Gy_vs_0Gy","Unique", category_names, other = TRUE, gpar = pht_gpar)))
   pht_list[[2]] = grid.grabExpr(draw(create_pathway_heatmap(unique_df, "6Gy_vs_0Gy","Unique", category_names, other = TRUE, gpar = pht_gpar)))
   pht_list[[3]] = grid.grabExpr(draw(create_pathway_heatmap(common_df, "2Gy_vs_0Gy","Common", category_names, other = TRUE, gpar = pht_gpar)))
   pht_list[[4]] = grid.grabExpr(draw(create_pathway_heatmap(common_df, "6Gy_vs_0Gy","Common", category_names, other = TRUE, gpar = pht_gpar)))
 
-  ght_gpar = list(rownames_fs = 5, rowtitle_fs = 6, cell_width = unit(1.5, "mm"), cell_height = unit(1.5, "mm"), cluster_rows = TRUE)
+  ght_gpar = list(rownames_fs = 5, rowtitle_fs = 6, title_fs = 6, colnames_fs = 5, cell_width = unit(1.5, "mm"), cell_height = unit(1.5, "mm"), cluster_rows = TRUE)
   ght_list[[1]] = grid.grabExpr(draw(make_gene_heatmap3(unique_df, all_gene_df, "2Gy_vs_0Gy", "Unique", category_names, gpar = ght_gpar)))
   ght_list[[2]] = grid.grabExpr(draw(make_gene_heatmap3(unique_df, all_gene_df, "6Gy_vs_0Gy", "Unique", category_names, gpar = ght_gpar)))
   ght_list[[3]] = grid.grabExpr(draw(make_gene_heatmap3(common_df, all_gene_df, "2Gy_vs_0Gy", "Common", category_names, gpar = ght_gpar)))

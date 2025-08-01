@@ -30,7 +30,8 @@ create_pathway_heatmap = function(df,
                                   name,
                                   category_names = NULL,
                                   other = FALSE,
-                                  gpar = list(rownames_fs = 14, rowtitle_fs = 14, title_fs = 8, cell_width = unit(10, "mm"), cell_height = unit(4.5, "mm"), cluster_rows = TRUE)){
+                                  gpar = list(rownames_fs = 14, rowtitle_fs = 14, title_fs = 8, colnames_fs = 14,
+                                              cell_width = unit(10, "mm"), cell_height = unit(4.5, "mm"), cluster_rows = TRUE)){
   if (class(df) == "list") {
     df = df[[1]]
     dose = dose[[1]]
@@ -111,7 +112,8 @@ create_pathway_heatmap = function(df,
                       row_title_gp = gpar(fontsize = gpar$rowtitle_fs),
                       column_title = glue("{name} {dose} Enriched Pathways"),
                       column_title_gp = gpar(fontsize = gpar$title_fs),
-                      row_title_rot = 0 ,
+                      column_names_gp = gpar(fontsize = gpar$colnames_fs),
+                      row_title_rot = 0,
                       border_gp = gpar(col = "black", lty = 2),
                       col = col_fun) %v% ht_list
   }
