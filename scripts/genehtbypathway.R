@@ -8,14 +8,31 @@ library(gridExtra)
 library(purrr)
 library(stringr)
 
+create_highlighted_row_anno = function(mat, rownames_fs, red_rownames, blue_rownames){
+  # Set stylings for row names and make our selected rows unique
+  red_row_idx <- which(rownames(mat) %in% red_rownames)
+  blue_row_idx <- which(rownames(mat) %in% blue_rownames)
+
+  fontsizes <- rep(rownames_fs,  nrow(mat))
+  fontcolors <- rep('black', nrow(mat))
+  fontcolors[red_row_idx] <- 'red'
+  fontcolors[blue_row_idx] <- 'blue'
+  fontfaces <- rep('plain',nrow(mat))
+  fontfaces[red_row_idx] <- 'bold'
+  fontfaces[blue_row_idx] <- 'bold'
+
+  # Create text annotation object for displaying row names
+  rowAnno <- rowAnnotation(rows = anno_text(rownames(mat), gp = gpar(fontsize = fontsizes, fontface = fontfaces, col = fontcolors)))
+  return(rowAnno)
+}
 make_gene_heatmap_by_pathway <- function(df,
-                               gene_df,
-                               dose,
-                               name,
-                               category_names = NULL,
-                               filter_df_by_dose = TRUE,
-                               rownames_fs = 4,
-                               rowtitle_fs = 14){
+                                         gene_df,
+                                         dose,
+                                         name,
+                                         category_names = NULL,
+                                         filter_df_by_dose = TRUE,
+                                         gpar = list(rownames_fs = 14, rowtitle_fs = 14, title_fs = 8, 
+                                                     cell_width = unit(10, "mm"), cell_height = unit(4.5, "mm"), cluster_rows = TRUE)){
   col_fun = colorRamp2(c(-2,0,2), c("blue", "white", "red"))
   ### Get all Genes that participate in Hypoxia, Aptosis, DNA Repair, and Epigenetics
   if (is.null(category_names)){
@@ -29,6 +46,7 @@ make_gene_heatmap_by_pathway <- function(df,
     categories[[category]] <- pathway_list
   }
   ht_list = NULL
+  i = 0
   for (category in category_names){
     filtered_df = df[df$pathway %in% categories[[category]],]
 
@@ -50,7 +68,6 @@ make_gene_heatmap_by_pathway <- function(df,
       for (cluster in c(0,1,2,3)){
         important_genes = unique(c(important_genes, pick_important_genes(filtered_gene_df)))
       }
-      print(important_genes)
       filtered_gene_df = filtered_gene_df[filtered_gene_df$gene %in% important_genes, ]
       filtered_gene_df = dcast(filtered_gene_df, gene ~  Cluster, value.var = "avg_log2FC", fill = 0)
       rownames = filtered_gene_df[["gene"]]
@@ -70,40 +87,38 @@ make_gene_heatmap_by_pathway <- function(df,
       # Rows to highlight
       uniqueRows <- data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/unique/unique_rna_marker_concatenated_output.txt", sep = " "))$gene
       commonRows <- data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/common/common_rna_marker_concatenated_output.txt", sep = " "))$gene
+
       # Set stylings for row names and make our selected rows unique
-      unique_row_idx <- which(rownames(mat) %in% uniqueRows)
-      common_row_idx <- which(rownames(mat) %in% commonRows)
+      rowAnno <- create_highlighted_row_anno(mat, gpar$rownames_fs, uniqueRows, commonRows) 
 
-      fontsizes <- rep(rownames_fs,  nrow(mat))
-      fontcolors <- rep('black', nrow(mat))
-      fontcolors[unique_row_idx] <- 'red'
-      fontcolors[common_row_idx] <- 'blue'
-      fontfaces <- rep('plain',nrow(mat))
-      fontfaces[unique_row_idx] <- 'bold'
-      fontfaces[common_row_idx] <- 'bold'
-
-      # Create text annotation object for displaying row names
-      rowAnno <- rowAnnotation(rows = anno_text(rownames(mat), gp = gpar(fontsize = fontsizes, fontface = fontfaces, col = fontcolors)))
-
+      i = i + 1
       ht_list = Heatmap(mat, 
+                        name = glue("ht{i}"),
                         cluster_columns = FALSE,
                         show_heatmap_legend = FALSE,
-                        row_names_gp = gpar(fontsize = rownames_fs),
+                        width = ncol(mat)* gpar$cell_width, 
+                        height = nrow(mat)* gpar$cell_height,
+                        row_names_gp = gpar(fontsize = gpar$rownames_fs),
                         row_names_max_width = max_text_width(
                                                              rownames(mat), 
                                                              gp = gpar(fontsize = 12)
                                                              ),
                         show_row_names = FALSE,
                         right_annotation = rowAnno,
-                        row_title_gp = gpar(fontsize = rowtitle_fs),
+                        row_title_gp = gpar(fontsize = gpar$rowtitle_fs),
                         row_title_rot = 0 ,
                         column_title = glue("{dose} Differential Expression for {name} Enriched pathways"),
                         row_title = glue({pathway}),
-                        cluster_rows = TRUE,
+                        cluster_rows = gpar$cluster_rows,
                         border_gp = gpar(col = "black", lty = 2),
                         col = col_fun)  %v% ht_list 
     }
   }
+
+  ht_list = draw(ht_list)
+  decorate_row_title(glue("ht1"), {
+                       gp = gpar(col = "red")
+  }, slice = 1)
   return(ht_list)
 }
 
@@ -117,16 +132,16 @@ pick_important_genes = function(gene_df){
   negative_gene_df = gene_df[gene_df$avg_log2FC < 0, ]
   negative_gene_df = negative_gene_df[order(negative_gene_df$avg_log2FC, decreasing = FALSE), ]
   negative_genes = head(negative_gene_df, 2)$gene
-  
+
   return(c(positive_genes, negative_genes))
 }
 
 if (sys.nframe() == 0){
   category_names = c("Apoptosis", "DNA Repair", "Epigenetics", "Extracellular Matrix Formation", "Immune System")
   ### Load in Data
-  all_df = data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/all/combinedpathway_withmore_mainfunction.txt", sep = "\t"))
-  unique_df = data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/unique/unique_combineddepathway_with_mainfunction.txt", sep = "\t"))
-  common_df = data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/common/common_combineddepathway_with_mainfunction.txt", sep = "\t"))
+  all_df = data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/all/combinedpathway_with_mainfunction.txt", sep = "\t"))
+  unique_df = data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/unique/unique_combinedpathway_with_mainfunction.txt", sep = "\t"))
+  common_df = data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/common/common_combinedpathway_with_mainfunction.txt", sep = "\t"))
 
   all_gene_df = data.frame(read.delim("data/all/rna_marker_concatenated_output.txt", sep = " "))
   unique_gene_df <- data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/unique/unique_rna_marker_concatenated_output.txt", sep = " "))
@@ -142,13 +157,15 @@ if (sys.nframe() == 0){
   unique_df = unique_df[!is.na(unique_df$NES) | !is.na(unique_df$pval), ]
   common_df = common_df[!is.na(common_df$NES) | !is.na(common_df$pval), ]
 
-  pdf("/Users/blakechang/Programming/khoi-modrek-lab/figures/output/genes_heatmap.pdf", height = 11, width = 15)
-  draw(make_gene_heatmap_by_pathway(all_df, all_gene_df, "2Gy_vs_0Gy", "all", category_names, rownames_fs = 4))
-  draw(make_gene_heatmap_by_pathway(all_df, all_gene_df, "6Gy_vs_0Gy", "all", category_names, rownames_fs = 3))
-  draw(make_gene_heatmap_by_pathway(unique_df, unique_gene_df, "2Gy_vs_0Gy", "unique", category_names, rownames_fs = 4))
-  draw(make_gene_heatmap_by_pathway(unique_df, unique_gene_df, "6Gy_vs_0Gy", "unique", category_names, rownames_fs = 3))
+  pdf("output/genehtbypathway.pdf", height = 11, width = 15)
+  draw(make_gene_heatmap_by_pathway(all_df, all_gene_df, "2Gy_vs_0Gy", "all", category_names))
+  draw(make_gene_heatmap_by_pathway(all_df, all_gene_df, "6Gy_vs_0Gy", "all", category_names))
 
-  draw(make_gene_heatmap_by_pathway(common_df, common_gene_df, "2Gy_vs_0Gy", "common", category_names, rownames_fs = 4))
-  draw(make_gene_heatmap_by_pathway(common_df, common_gene_df, "6Gy_vs_0Gy", "common", category_names, rownames_fs = 3))
+  draw(make_gene_heatmap_by_pathway(unique_df, unique_gene_df, "2Gy_vs_0Gy", "unique", category_names))
+  draw(make_gene_heatmap_by_pathway(unique_df, unique_gene_df, "6Gy_vs_0Gy", "unique", category_names))
+
+  draw(make_gene_heatmap_by_pathway(common_df, common_gene_df, "2Gy_vs_0Gy", "common", category_names))
+  draw(make_gene_heatmap_by_pathway(common_df, common_gene_df, "6Gy_vs_0Gy", "common", category_names))
+  print(list_components())
   dev.off()
 }
