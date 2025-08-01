@@ -11,21 +11,82 @@ library(stringr)
 source("scripts/view_df.R", echo = TRUE)
 
 create_highlighted_row_anno = function(mat, rownames_fs, red_rownames, blue_rownames){
-    # Set stylings for row names and make our selected rows unique
-    red_row_idx <- which(rownames(mat) %in% red_rownames)
-    blue_row_idx <- which(rownames(mat) %in% blue_rownames)
+  # Set stylings for row names and make our selected rows unique
+  red_row_idx <- which(rownames(mat) %in% red_rownames)
+  blue_row_idx <- which(rownames(mat) %in% blue_rownames)
 
-    fontsizes <- rep(rownames_fs,  nrow(mat))
-    fontcolors <- rep('black', nrow(mat))
-    fontcolors[red_row_idx] <- 'red'
-    fontcolors[blue_row_idx] <- 'blue'
-    fontfaces <- rep('plain',nrow(mat))
-    fontfaces[red_row_idx] <- 'bold'
-    fontfaces[blue_row_idx] <- 'bold'
+  fontsizes <- rep(rownames_fs,  nrow(mat))
+  fontcolors <- rep('black', nrow(mat))
+  fontcolors[red_row_idx] <- 'red'
+  fontcolors[blue_row_idx] <- 'blue'
+  fontfaces <- rep('plain',nrow(mat))
+  fontfaces[red_row_idx] <- 'bold'
+  fontfaces[blue_row_idx] <- 'bold'
 
-    # Create text annotation object for displaying row names
-    rowAnno <- rowAnnotation(rows = anno_text(rownames(mat), gp = gpar(fontsize = fontsizes, fontface = fontfaces, col = fontcolors)))
-    return(rowAnno)
+  # Create text annotation object for displaying row names
+  rowAnno <- rowAnnotation(rows = anno_text(rownames(mat), gp = gpar(fontsize = fontsizes, fontface = fontfaces, col = fontcolors)))
+  return(rowAnno)
+}
+
+make_gene_heatmap <- function(df,
+                              gene_df,
+                              dose,
+                              name,
+                              value.var,
+                              filter_df_by_dose = TRUE,
+                              gpar = list(rownames_fs = 14, rowtitle_fs = 14, title_fs = 8, colnames_fs = 14,
+                                          width = unit(10, "mm"), height = unit(4.5, "mm"), cluster_rows = TRUE)){
+  ### Get all Genes that participate in Hypoxia, Aptosis, DNA Repair, and Epigenetics
+
+  filtered_df = df[df$DoseComparison == dose & df$pval < 0.05, ]
+  gene_list = unique(strsplit(paste(filtered_df[,"leadingEdge"], collapse = ","), ","))[[1]]
+  formatted_gene_list = map_chr(gene_list, str_trim)
+  filtered_gene_df = gene_df[gene_df$motif_gene %in% formatted_gene_list & gene_df$p_val < .05,] 
+  filtered_gene_df = filtered_gene_df[filtered_gene_df$DoseComparison == dose, ]
+  filtered_gene_df = dcast(filtered_gene_df, motif_gene ~  Cluster, value.var = value.var, fill = 0, fun.aggregate = max)
+  rownames = filtered_gene_df[["motif_gene"]]
+  required_columns <- c("0", "1", "2", "3")
+  for (col in required_columns) {
+    if (!col %in% names(filtered_gene_df)) {
+      filtered_gene_df[[col]] <- 0
+    }
+  }
+  filtered_gene_df = filtered_gene_df %>% select(any_of(c("0", "1", "2","3")))
+  mat = data.matrix(filtered_gene_df)
+  rownames(mat) = rownames
+  mat[is.na(mat)] <- 0
+  max_val = max(unlist(mat))
+  col_fun = colorRamp2(c(0,max_val), c("white", "red"))
+  #mat = mat[rowSums(mat) != 0 ,]
+
+  # Rows to highlight
+  uniqueRows <- data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/unique/unique_rna_marker_concatenated_output.txt", sep = " "))$gene
+  commonRows <- data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/common/common_rna_marker_concatenated_output.txt", sep = " "))$gene
+  # Set stylings for row names and make our selected rows unique
+
+  rowAnno <- create_highlighted_row_anno(mat, gpar$rownames_fs, list(), list()) #Inputting Empty lists like this makes everything black
+
+  ht = Heatmap(mat, 
+               cluster_columns = FALSE,
+               show_heatmap_legend = TRUE,
+               row_names_gp = gpar(fontsize = gpar$rownames_fs),
+               row_names_max_width = max_text_width(
+                                                    rownames(mat), 
+                                                    gp = gpar(fontsize = 12)
+                                                    ),
+               show_row_names = FALSE,
+               right_annotation = rowAnno,
+               row_title_gp = gpar(fontsize = gpar$rowtitle_fs),
+               row_title_rot = 0 ,
+               column_title = glue("{dose} {name}"),
+               column_names_gp = gpar(fontsize = gpar$colnames_fs),
+               cluster_rows = TRUE,
+               border_gp = gpar(col = "black", lty = 2),
+               width = ncol(mat)* gpar$cell_width, 
+               height = nrow(mat)* gpar$cell_height,
+               col = col_fun)   
+
+  return(ht)
 }
 
 make_gene_heatmap2 <- function(df,
@@ -114,6 +175,7 @@ make_gene_heatmap3 <- function(df,
                                gene_df,
                                dose,
                                name,
+                               value.var = "avg_log2FC",
                                category_names = NULL,
                                filter_df_by_dose = TRUE,
                                other = FALSE,
@@ -156,7 +218,7 @@ make_gene_heatmap3 <- function(df,
         important_genes = unique(c(important_genes, pick_important_genes(filtered_gene_df)))
       }
       filtered_gene_df = filtered_gene_df[filtered_gene_df$gene %in% important_genes, ]
-      filtered_gene_df = dcast(filtered_gene_df, gene ~  Cluster, value.var = "avg_log2FC", fill = 0)
+      filtered_gene_df = dcast(filtered_gene_df, gene ~  Cluster, value.var = value.var, fill = 0)
       rownames = filtered_gene_df[["gene"]]
       required_columns <- c("0", "1", "2", "3")
       for (col in required_columns) {
@@ -239,7 +301,7 @@ pick_important_genes = function(gene_df){
   negative_gene_df = gene_df[gene_df$avg_log2FC < 0, ]
   negative_gene_df = negative_gene_df[order(negative_gene_df$avg_log2FC, decreasing = FALSE), ]
   negative_genes = head(negative_gene_df, 1)$gene
-  
+
   return(c(positive_genes, negative_genes))
 }
 
@@ -276,7 +338,7 @@ if (sys.nframe() == 0){
 
   draw(make_gene_heatmap3(all_df, all_gene_df, "2Gy_vs_0Gy", "all"))
   draw(make_gene_heatmap3(all_df, all_gene_df, "6Gy_vs_0Gy", "all"))
-  
+
   draw(make_gene_heatmap3(unique_df, unique_gene_df, "2Gy_vs_0Gy", "unique"))
   draw(make_gene_heatmap3(unique_df, unique_gene_df, "6Gy_vs_0Gy", "unique"))
 
