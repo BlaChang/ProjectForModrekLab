@@ -9,10 +9,10 @@ library(patchwork)
 
 
 #Basically make Motif 
-make_motif_heatmap = function(atac_df, direction, dose, name, rownames_fs, value.var = "number_of_Target_Sequences_with_Motif", cluster_rows = TRUE){
+make_motif_heatmap = function(atac_df, direction, dose, name, rownames_fs, value.var = "count_peaks_with_motif", cluster_rows = TRUE){
 
   print(glue("{dose} {direction} {name}"))
-  filtered_atac_df = atac_df[atac_df$P_value < 0.05 & atac_df$status == direction & atac_df$DoseComparison == dose, ]
+  filtered_atac_df = atac_df[atac_df$pval < 0.05 & atac_df$status == direction & atac_df$DoseComparison == dose, ]
 
   casted_df = dcast(filtered_atac_df, motif_gene ~ Cluster, value.var = value.var, fun.aggregate = mean, fill = 0)
 
@@ -38,8 +38,8 @@ make_motif_heatmap = function(atac_df, direction, dose, name, rownames_fs, value
                cluster_rows = cluster_rows,
                show_heatmap_legend = TRUE,
                show_row_dend= FALSE,
-               width = unit(2, "cm"),
-               height = unit(10, "cm"),
+               #width = unit(2, "cm"),
+               #height = unit(10, "cm"),
                row_names_gp = gpar(fontsize = rownames_fs),
                row_names_max_width = max_text_width(
                                                     rownames(mat), 
@@ -56,8 +56,8 @@ make_motif_heatmap = function(atac_df, direction, dose, name, rownames_fs, value
 
 if (sys.nframe() == 0){
   all_atac_df = data.frame(read.delim("data/all/all_homer_distancezero_concat.txt", sep = " " )) 
-  unique_atac_df = data.frame(read.delim("data/unique/unique_homer_distancezero_concat.txt", sep = " " )) 
-  common_atac_df = data.frame(read.delim("data/common/common_homer_distancezero_concat.txt", sep = " " ))
+  unique_atac_df = data.frame(read.delim("data/unique/unique_homer_distancezero.txt", sep = " " )) 
+  common_atac_df = data.frame(read.delim("data/common/common_homer_distancezero.txt", sep = " " ))
 
 
   #Possibly later filter out NA rows
@@ -67,10 +67,10 @@ if (sys.nframe() == 0){
   draw(make_motif_heatmap(unique_atac_df, "down", "2Gy_vs_0Gy", "Unique", rownames_fs = 12))
   draw(make_motif_heatmap(unique_atac_df, "down", "6Gy_vs_0Gy", "Unique", rownames_fs = 12))
 
-  #make_motif_heatmap(common_atac_df, "up", "2Gy_vs_0Gy", "Common", rownames_fs = 12)
+  draw(make_motif_heatmap(common_atac_df, "up", "2Gy_vs_0Gy", "Common", rownames_fs = 12))
   draw(make_motif_heatmap(common_atac_df, "up", "6Gy_vs_0Gy", "Common", rownames_fs = 12))
-  #draw(make_motif_heatmap(common_atac_df, "down", "2Gy_vs_0Gy", "Common", rownames_fs = 12))
-  #draw(make_motif_heatmap(common_atac_df, "down", "6Gy_vs_0Gy", "Common", rownames_fs = 12))
+  draw(make_motif_heatmap(common_atac_df, "down", "2Gy_vs_0Gy", "Common", rownames_fs = 12))
+  draw(make_motif_heatmap(common_atac_df, "down", "6Gy_vs_0Gy", "Common", rownames_fs = 12))
 
   dev.off()
 
