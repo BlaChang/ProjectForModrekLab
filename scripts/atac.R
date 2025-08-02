@@ -11,9 +11,17 @@ source("scripts/geneht.R", echo = TRUE)
 source("scripts/atac_motif_heatmap.R", echo = TRUE)
 source("scripts/homergoht.R", echo = TRUE)
 source("scripts/view_df.R", echo = TRUE)
+source("scripts/venndiagrams.R", echo = TRUE)
 
 
 if (sys.nframe() == 0){
+  atac_venn_plot = list()
+  for (i in 0:3){
+    atac_venn_plot[[i+1]] = atac_venn_diagram(c(i))
+  }
+  atac_venn_plot[[5]] = atac_venn_diagram(c(0,1,2,3)) 
+  atac_venn = (atac_venn_plot[[1]] | atac_venn_plot[[2]] | atac_venn_plot[[3]] | atac_venn_plot[[4]] | atac_venn_plot[[5]])  
+
   atac_goht_list = list()
   unique_motifht_list = list()
   common_motifht_list = list()
@@ -39,6 +47,7 @@ if (sys.nframe() == 0){
 
 
   pdf("output/atac.pdf", width = 11, height = 8.5)
+  print(atac_venn)
   print(atac_goht_list[[1]]) 
   print(unique_motifht_list[[1]])
   print(common_motifht_list[[1]])
