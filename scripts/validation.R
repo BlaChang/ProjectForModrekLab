@@ -6,10 +6,8 @@ library(circlize)
 library(glue)
 library(gridExtra)
 library(patchwork)
-
-source("scripts/pathwaygeneht.R", echo = TRUE)
-source("scripts/venndiagrams.R", echo = TRUE)
-source("scripts/venndiagrams.R", echo = TRUE)
+library(purrr)
+library(stringr)
 
 change_column_name = function(df, old, new){
   colnames(df)[which(names(df) == old)] = new
@@ -17,6 +15,8 @@ change_column_name = function(df, old, new){
 }
 
 
+source("scripts/pathwayht.R", echo = TRUE)
+source("scripts/geneht.R", echo = TRUE)
 
 if (sys.nframe() == 0){
   ###Preprocessing and Setup ----------------------------------------------------------  
@@ -65,40 +65,32 @@ if (sys.nframe() == 0){
   common_hf2354_df = hf2354_df[hf2354_df$common_name %in% hf2354_common_pathways, ]
   common_hf3016_df = hf3016_df[hf3016_df$common_name %in% hf3016_common_pathways, ]
   
-  hf2354_ht = create_pathway_heatmap(common_hf2354_df, "hf2354", dose = "Fractionated", category_names = NULL, other = TRUE, rownames_fs = 5, rowtitle_fs = 6)
-  hf3016_ht = create_pathway_heatmap(common_hf3016_df, "hf3016", dose = "Fractionated", category_names = NULL, other = TRUE, rownames_fs = 5, rowtitle_fs = 6)
+  
+  validation_gpar = list(rownames_fs = 5, rowtitle_fs = 6, title_fs = 6, colnames_fs = 5, 
+                  cell_width = unit(1.5, "mm"), cell_height = unit(1.5, "mm"), cluster_rows = TRUE, show_heatmap_legend = FALSE)
+  hf2354_ht = create_pathway_heatmap(common_hf2354_df, "hf2354", dose = "Fractionated", category_names = NULL, other = TRUE, gpar = validation_gpar)
+  hf3016_ht = create_pathway_heatmap(common_hf3016_df, "hf3016", dose = "Fractionated", category_names = NULL, other = TRUE, gpar = validation_gpar)
 
-  hf2354_gene_df = change_column_name(hf2354_gene_df, "avg_log2FC_2", "avg_log2FC")
+  hf2354_gene_df = change_column_name(hf2354_gene_df, "avg_log2FC_2", "avg_log2FC")   ### Need to rename columns to be compatible with premade functions 
   hf2354_gene_df = change_column_name(hf2354_gene_df, "p_val_2", "p_val")
   hf3016_gene_df = change_column_name(hf3016_gene_df, "avg_log2FC_2", "avg_log2FC")
   hf3016_gene_df = change_column_name(hf3016_gene_df, "p_val_2", "p_val")
   
   
+  val_gene_gpar = list(rownames_fs = 5, rowtitle_fs = 6, title_fs = 6, colnames_fs = 5, 
+                  cell_width = unit(1.5, "mm"), cell_height = unit(1.5, "mm"), cluster_rows = TRUE, show_heatmap_legend = FALSE)
+
   hf2354_gene_df2 = hf2354_gene_df[hf2354_gene_df$DoseComparison == "2Gy_vs_0Gy", ]
   hf3016_gene_df2 = hf3016_gene_df[hf3016_gene_df$DoseComparison == "2Gy_vs_0Gy", ]
-  hf2354_gene_ht2 = make_gene_heatmap2(hf2354_df, "2Gy_vs_0Gy", "hf2354", filter_df_by_dose = FALSE, gene_df = hf2354_gene_df2, NULL, rownames_fs = 12, rowtitle_fs = 12)
-  hf3016_gene_ht2 = make_gene_heatmap2(hf3016_df, "2Gy_vs_0Gy", "hf3016", filter_df_by_dose = FALSE, gene_df = hf3016_gene_df2, category_names = NULL, rownames_fs = 12, rowtitle_fs = 12)
+
+
+  hf2354_gene_ht2 = make_gene_heatmap2(hf2354_df, hf2354_gene_df2, "2Gy_vs_0Gy", "hf2354", filter_df_by_dose = FALSE, category_names = NULL, gpar = val_gene_gpar)
+  hf3016_gene_ht2 = make_gene_heatmap2(hf3016_df, hf3016_gene_df2, "2Gy_vs_0Gy", "hf3016", filter_df_by_dose = FALSE, category_names = NULL, gpar = val_gene_gpar)
 
   hf2354_gene_df6 = hf2354_gene_df[hf2354_gene_df$DoseComparison == "6Gy_vs_0Gy", ]
   hf3016_gene_df6 = hf3016_gene_df[hf3016_gene_df$DoseComparison == "6Gy_vs_0Gy", ]
-  hf2354_gene_ht6 = make_gene_heatmap2(hf2354_df, "6Gy_vs_0Gy", "hf2354", filter_df_by_dose = FALSE, gene_df = hf2354_gene_df6, NULL, rownames_fs = 12, rowtitle_fs = 12)
-  hf3016_gene_ht6 = make_gene_heatmap2(hf3016_df, "6Gy_vs_0Gy", "hf3016", filter_df_by_dose = FALSE, gene_df = hf3016_gene_df6, category_names = NULL, rownames_fs = 12, rowtitle_fs = 12)
-#  hf2354xgsc20_gene_ht = make_gene_heatmap2(common_hf2354_df, "Fractionated", "h2354 compared with GSC20", category_names, gene_path = all_gene_path,rownames_fs = 12, rowtitle_fs = 12)
-#  hf3016xgsc20_gene_ht = make_gene_heatmap2(common_hf3016_df, "Fractionated", "h3016 compared with GSC20", category_names, gene_path = all_gene_path,rownames_fs = 12, rowtitle_fs = 12)
-
-
-
-  ###Draw Validation Figure ----------
-  #hf2354_ht = grid.grabExpr(draw(hf2354_ht))
-  #hf3016_ht = grid.grabExpr(draw(hf3016_ht))
-#  hf2354_gene_ht = grid.grabExpr(draw(hf2354_gene_ht))
-#  hf3016_gene_ht = grid.grabExpr(draw(hf3016_gene_ht))
-#
-#  hf2354xgsc20_gene_ht = grid.grabExpr(draw(hf2354xgsc20_gene_ht))
-#  hf3016xgsc20_gene_ht = grid.grabExpr(draw(hf3016xgsc20_gene_ht))
-
-#  figure = wrap_plots(hf2354_ht, hf2354_gene_ht, hf2354xgsc20_gene_ht, ncol = 3)
-#  figure2 = wrap_plots(hf3016_ht, hf3016_gene_ht, hf3016xgsc20_gene_ht, ncol = 3)
+  hf2354_gene_ht6 = make_gene_heatmap2(hf2354_df, hf2354_gene_df6, "6Gy_vs_0Gy", "hf2354", filter_df_by_dose = FALSE, NULL, gpar = val_gene_gpar)
+  hf3016_gene_ht6 = make_gene_heatmap2(hf3016_df, hf3016_gene_df6, "6Gy_vs_0Gy", "hf3016", filter_df_by_dose = FALSE, category_names = NULL, gpar = val_gene_gpar)
 
   pdf("output/validation.pdf", height = 11, width = 8.5)
   print(hf2354_ht)

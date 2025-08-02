@@ -8,7 +8,6 @@ library(gridExtra)
 library(patchwork)
 library(readr)
 
-source("scripts/pathwaygeneht.R", echo = TRUE)
 source("scripts/geneht.R", echo = TRUE)
 source("scripts/venndiagrams.R", echo = TRUE)
 source("scripts/view_df.R", echo = TRUE)

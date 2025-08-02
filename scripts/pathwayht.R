@@ -31,7 +31,7 @@ create_pathway_heatmap = function(df,
                                   category_names = NULL,
                                   other = FALSE,
                                   gpar = list(rownames_fs = 14, rowtitle_fs = 14, title_fs = 8, colnames_fs = 14,
-                                              cell_width = unit(10, "mm"), cell_height = unit(4.5, "mm"), cluster_rows = TRUE)){
+                                              cell_width = unit(10, "mm"), cell_height = unit(4.5, "mm"), cluster_rows = TRUE, show_heatmap_legend = TRUE)){
   if (class(df) == "list") {
     df = df[[1]]
     dose = dose[[1]]
@@ -93,11 +93,13 @@ create_pathway_heatmap = function(df,
     }
     rowAnno = create_highlighted_row_anno(mat, gpar$rownames_fs, unique_rows, common_rows)
 
+    show_heatmap_legend = FALSE
+    if (length(ht_list) < 1 & gpar$show_heatmap_legend) show_heatmap_legend = TRUE
     ###Create Heatmap --------------------
     ht_list = Heatmap(mat,
                       cluster_columns = FALSE,
                       cluster_rows = gpar$cluster_rows,
-                      show_heatmap_legend = FALSE,
+                      show_heatmap_legend = show_heatmap_legend,
                       width = ncol(mat)* gpar$cell_width, 
                       height = nrow(mat)*gpar$cell_height, #1.5
                       show_row_dend= FALSE,
@@ -111,6 +113,7 @@ create_pathway_heatmap = function(df,
                       right_annotation = rowAnno,
                       row_title_gp = gpar(fontsize = gpar$rowtitle_fs),
                       column_title = glue("{name} {dose} Enriched Pathways"),
+                      heatmap_legend_param = list(title = "NES"),
                       column_title_gp = gpar(fontsize = gpar$title_fs),
                       column_names_gp = gpar(fontsize = gpar$colnames_fs),
                       row_title_rot = 0,

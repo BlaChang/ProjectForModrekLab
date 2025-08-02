@@ -36,7 +36,6 @@ make_gene_heatmap <- function(df,
                               filter_df_by_dose = TRUE,
                               gpar = list(rownames_fs = 14, rowtitle_fs = 14, title_fs = 8, colnames_fs = 14,
                                           width = unit(10, "mm"), height = unit(4.5, "mm"), cluster_rows = TRUE)){
-  ### Get all Genes that participate in Hypoxia, Aptosis, DNA Repair, and Epigenetics
 
   filtered_df = df[df$DoseComparison == dose & df$pval < 0.05, ]
   gene_list = unique(strsplit(paste(filtered_df[,"leadingEdge"], collapse = ","), ","))[[1]]
@@ -182,7 +181,7 @@ make_gene_heatmap3 <- function(df,
                                filter_df_by_dose = TRUE,
                                other = FALSE,
                                gpar = list(rownames_fs = 14, rowtitle_fs = 14, title_fs = 8, colnames_fs = 14,
-                                           cell_width = unit(10, "mm"), cell_height = unit(4.5, "mm"), cluster_rows = TRUE)){
+                                           cell_width = unit(10, "mm"), cell_height = unit(3, "mm"), cluster_rows = TRUE, show_heatmap_legend = TRUE)){
   col_fun = colorRamp2(c(-2,0,2), c("blue", "white", "red"))
   ### Get all Genes that participate in Hypoxia, Aptosis, DNA Repair, and Epigenetics
   if (is.null(category_names)){
@@ -265,10 +264,12 @@ make_gene_heatmap3 <- function(df,
     rowAnno <- rowAnnotation(rows = anno_text(rownames(mat), gp = gpar(fontsize = fontsizes, fontface = fontfaces, col = fontcolors)))
 
 
+    show_heatmap_legend = FALSE
+    if (length(ht_list) < 1 & gpar$show_heatmap_legend) show_heatmap_legend = TRUE
 
     ht_list = Heatmap(mat, 
                       cluster_columns = FALSE,
-                      show_heatmap_legend = FALSE,
+                      show_heatmap_legend = show_heatmap_legend,
                       row_names_gp = gpar(fontsize = gpar$rownames_fs),
                       row_names_max_width = max_text_width(
                                                            rownames(mat), 
@@ -283,6 +284,7 @@ make_gene_heatmap3 <- function(df,
                       column_title_gp = gpar(fontsize = gpar$title_fs),
                       column_names_gp = gpar(fontsize = gpar$colnames_fs),
                       row_title = glue("{category}"),
+                      heatmap_legend_param = list(title = value.var),
                       cluster_rows = TRUE,
                       width = ncol(mat)* gpar$cell_width, 
                       height = nrow(mat)* gpar$cell_height,
@@ -328,23 +330,23 @@ if (sys.nframe() == 0){
   unique_df = unique_df[!is.na(unique_df$NES) | !is.na(unique_df$pval), ]
   common_df = common_df[!is.na(common_df$NES) | !is.na(common_df$pval), ]
 
-  pdf("output/genesht.pdf", height = 11, width = 15)
-  #draw(make_gene_heatmap3(all_df, all_gene_df, "2Gy_vs_0Gy", "all", category_names))
-  #draw(make_gene_heatmap3(all_df, all_gene_df, "6Gy_vs_0Gy", "all", category_names))
+  pdf("output/geneht.pdf", height = 11, width = 15)
+  draw(make_gene_heatmap3(all_df, all_gene_df, "2Gy_vs_0Gy", "all", category_names))
+  draw(make_gene_heatmap3(all_df, all_gene_df, "6Gy_vs_0Gy", "all", category_names))
   #
-  #draw(make_gene_heatmap3(unique_df, unique_gene_df, "2Gy_vs_0Gy", "unique", category_names))
-  #draw(make_gene_heatmap3(unique_df, unique_gene_df, "6Gy_vs_0Gy", "unique", category_names))
+  draw(make_gene_heatmap3(unique_df, unique_gene_df, "2Gy_vs_0Gy", "unique", category_names))
+  draw(make_gene_heatmap3(unique_df, unique_gene_df, "6Gy_vs_0Gy", "unique", category_names))
 
-  #draw(make_gene_heatmap3(common_df, common_gene_df, "2Gy_vs_0Gy", "common", category_names))
-  #draw(make_gene_heatmap3(common_df, common_gene_df, "6Gy_vs_0Gy", "common", category_names))
+  draw(make_gene_heatmap3(common_df, common_gene_df, "2Gy_vs_0Gy", "common", category_names))
+  draw(make_gene_heatmap3(common_df, common_gene_df, "6Gy_vs_0Gy", "common", category_names))
 
-  draw(make_gene_heatmap3(all_df, all_gene_df, "2Gy_vs_0Gy", "all"))
-  draw(make_gene_heatmap3(all_df, all_gene_df, "6Gy_vs_0Gy", "all"))
+  draw(make_gene_heatmap3(all_df, all_gene_df, "2Gy_vs_0Gy", "all(ALL CATEGORIES)"))
+  draw(make_gene_heatmap3(all_df, all_gene_df, "6Gy_vs_0Gy", "all(ALL CATEGORIES)"))
 
-  draw(make_gene_heatmap3(unique_df, unique_gene_df, "2Gy_vs_0Gy", "unique"))
-  draw(make_gene_heatmap3(unique_df, unique_gene_df, "6Gy_vs_0Gy", "unique"))
+  draw(make_gene_heatmap3(unique_df, unique_gene_df, "2Gy_vs_0Gy", "unique(ALL CATEGORIES)"))
+  draw(make_gene_heatmap3(unique_df, unique_gene_df, "6Gy_vs_0Gy", "unique(ALL CATEGORIES)"))
 
-  draw(make_gene_heatmap3(common_df, common_gene_df, "2Gy_vs_0Gy", "common"))
-  draw(make_gene_heatmap3(common_df, common_gene_df, "6Gy_vs_0Gy", "common"))
+  draw(make_gene_heatmap3(common_df, common_gene_df, "2Gy_vs_0Gy", "common(ALL CATEGORIES)"))
+  draw(make_gene_heatmap3(common_df, common_gene_df, "6Gy_vs_0Gy", "common(ALL CATEORIES)"))
   dev.off()
 }

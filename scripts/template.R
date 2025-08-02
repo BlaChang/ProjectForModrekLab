@@ -7,7 +7,6 @@ library(glue)
 library(gridExtra)
 library(patchwork)
 
-source("scripts/pathwaygeneht.R", echo = TRUE)
 source("scripts/geneht.R", echo = TRUE)
 source("scripts/venndiagrams.R", echo = TRUE)
 

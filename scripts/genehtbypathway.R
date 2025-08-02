@@ -166,6 +166,5 @@ if (sys.nframe() == 0){
 
   draw(make_gene_heatmap_by_pathway(common_df, common_gene_df, "2Gy_vs_0Gy", "common", category_names))
   draw(make_gene_heatmap_by_pathway(common_df, common_gene_df, "6Gy_vs_0Gy", "common", category_names))
-  print(list_components())
   dev.off()
 }
