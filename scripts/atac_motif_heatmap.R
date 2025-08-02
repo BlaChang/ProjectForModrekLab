@@ -71,7 +71,6 @@ make_motif_heatmap = function(name,
   homer_pathway_df = data.frame(read.delim(glue("data/all/all_gobp_homer_{lowercase_direction}_goanalysis.txt"), sep = "\t"))
   atac_df = data.frame(read.delim(glue("data/{lowercase_name}/{lowercase_name}_homer_distancezero.txt"), sep = " " ))  
   atac_df = atac_df[atac_df$status == lowercase_direction & atac_df$DoseComparison == dose, ]
-  view_df(atac_df)
 
   direction = glue("{direction} {name}")
   ht = make_gene_heatmap(homer_pathway_df, atac_df, dose, name = direction, value.var = "count_peaks_with_motif", gpar = gpar)
@@ -89,15 +88,15 @@ if (sys.nframe() == 0){
   #category_names = c("Apoptosis", "DNA Repair", "Epigenetics", "Extracellular Matrix Formation", "Innate Immune System", "Adaptive Immune System", "Cytokine Signalling Immune System")
 
   pdf("output/atac_motif_heatmap.pdf", height = 11, width = 8.5)
-  #draw(make_motif_heatmap("Unique", "up", "2Gy_vs_0Gy", category_names = category_names))
+  draw(make_motif_heatmap("Unique", "up", "2Gy_vs_0Gy"))
   draw(make_motif_heatmap("Unique", "up", "6Gy_vs_0Gy"))
-  #  draw(make_motif_heatmap("Unique", "down", "2Gy_vs_0Gy", category_names = category_names))
-  #  draw(make_motif_heatmap("Unique", "down", "6Gy_vs_0Gy", category_names = category_names))
-  #
-  #  draw(make_motif_heatmap("Common", "up", "2Gy_vs_0Gy", category_names = category_names))
-  #  draw(make_motif_heatmap("Common", "up", "6Gy_vs_0Gy", category_names = category_names))
-  #  draw(make_motif_heatmap("Common", "down", "2Gy_vs_0Gy", category_names = category_names))
-  #  draw(make_motif_heatmap("Common", "down", "6Gy_vs_0Gy", category_names = category_names))
+  draw(make_motif_heatmap("Unique", "down", "2Gy_vs_0Gy"))
+  draw(make_motif_heatmap("Unique", "down", "6Gy_vs_0Gy"))
+
+  draw(make_motif_heatmap("Common", "up", "2Gy_vs_0Gy"))
+  draw(make_motif_heatmap("Common", "up", "6Gy_vs_0Gy"))
+  draw(make_motif_heatmap("Common", "down", "2Gy_vs_0Gy"))
+  draw(make_motif_heatmap("Common", "down", "6Gy_vs_0Gy"))
   dev.off()
 
 

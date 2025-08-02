@@ -57,7 +57,7 @@ df_to_heatmap <- function(df,
   return(ht)
 }
 
-make_homer_ht = function(name,
+make_atac_go_heatmap = function(name,
                          direction,
                          dose, 
                          gpar = list(rownames_fs = 14, rowtitle_fs = 14, title_fs = 8, cell_width = unit(10, "mm"), cell_height = unit(4.5, "mm"), cluster_rows = TRUE)){
@@ -78,20 +78,20 @@ if (sys.nframe() == 0){
 
   homer_gpar = list(rownames_fs = 6, rowtitle_fs = 6, title_fs = 8, cell_width = unit(10, "mm"), cell_height = unit(1.5, "mm"), cluster_rows = TRUE)
   pdf("output/homergoht.pdf", width = 11, height = 11)  # Create PDF output file
-  draw(make_homer_ht("All", "Up", "2Gy_vs_0Gy", gpar = homer_gpar), heatmap_legend_side = "left")
-  draw(make_homer_ht("All", "Down", "2Gy_vs_0Gy", gpar = homer_gpar), heatmap_legend_side = "left")
-  draw(make_homer_ht("All", "Up", "6Gy_vs_0Gy", gpar = homer_gpar), heatmap_legend_side = "left")
-  draw(make_homer_ht("All", "Down", "6Gy_vs_0Gy", gpar = homer_gpar), heatmap_legend_side = "left")
+  draw(make_atac_go_heatmap("All", "Up", "2Gy_vs_0Gy", gpar = homer_gpar), heatmap_legend_side = "left")
+  draw(make_atac_go_heatmap("All", "Down", "2Gy_vs_0Gy", gpar = homer_gpar), heatmap_legend_side = "left")
+  draw(make_atac_go_heatmap("All", "Up", "6Gy_vs_0Gy", gpar = homer_gpar), heatmap_legend_side = "left")
+  draw(make_atac_go_heatmap("All", "Down", "6Gy_vs_0Gy", gpar = homer_gpar), heatmap_legend_side = "left")
 
-  #draw(make_homer_ht("Common", "Up", "2Gy_vs_0Gy", gpar = homer_gpar))
-  #draw(make_homer_ht("Common", "Down", "2Gy_vs_0Gy", gpar = homer_gpar))
-  #draw(make_homer_ht("Common", "Up", "6Gy_vs_0Gy", gpar = homer_gpar))
-  #draw(make_homer_ht("Common", "Down", "6Gy_vs_0Gy", gpar = homer_gpar))
+  #draw(make_atac_go_heatmap("Common", "Up", "2Gy_vs_0Gy", gpar = homer_gpar))
+  #draw(make_atac_go_heatmap("Common", "Down", "2Gy_vs_0Gy", gpar = homer_gpar))
+  #draw(make_atac_go_heatmap("Common", "Up", "6Gy_vs_0Gy", gpar = homer_gpar))
+  #draw(make_atac_go_heatmap("Common", "Down", "6Gy_vs_0Gy", gpar = homer_gpar))
 
-  #draw(make_homer_ht("unique", "up", "2Gy_vs_0Gy", gpar = homer_gpar))
-  #draw(make_homer_ht("unique", "down", "2Gy_vs_0Gy", gpar = homer_gpar))
-  #draw(make_homer_ht("unique", "up", "6Gy_vs_0Gy", gpar = homer_gpar))
-  #draw(make_homer_ht("unique", "down", "6Gy_vs_0Gy", gpar = homer_gpar))
+  #draw(make_atac_go_heatmap("unique", "up", "2Gy_vs_0Gy", gpar = homer_gpar))
+  #draw(make_atac_go_heatmap("unique", "down", "2Gy_vs_0Gy", gpar = homer_gpar))
+  #draw(make_atac_go_heatmap("unique", "up", "6Gy_vs_0Gy", gpar = homer_gpar))
+  #draw(make_atac_go_heatmap("unique", "down", "6Gy_vs_0Gy", gpar = homer_gpar))
   dev.off()
 
 
