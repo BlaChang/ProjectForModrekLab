@@ -7,22 +7,22 @@ library(glue)
 library(gridExtra)
 library(patchwork)
 
-source("/Users/blakechang/Programming/khoi-modrek-lab/figures/scripts/pathwaygeneht.R", echo = TRUE)
-source("/Users/blakechang/Programming/khoi-modrek-lab/figures/scripts/geneht.R", echo = TRUE)
-source("/Users/blakechang/Programming/khoi-modrek-lab/figures/scripts/venndiagrams.R", echo = TRUE)
+source("scripts/pathwaygeneht.R", echo = TRUE)
+source("scripts/geneht.R", echo = TRUE)
+source("scripts/venndiagrams.R", echo = TRUE)
 source("scripts/atac_motif_heatmap.R", echo = TRUE)
 source("scripts/homergoht.R", echo = TRUE)
 
 if (sys.nframe() == 0){
   ###Preprocessing and Setup ----------------------------------------------------------  
   ### Load in Data
-  all_df <- data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/all/combinedpathway_with_mainfunction.txt", sep = "\t"))
-  unique_df = data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/unique/unique_combinedpathway_with_mainfunction.txt", sep = "\t"))
-  common_df = data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/common/common_combinedpathway_with_mainfunction.txt", sep = "\t"))
+  all_df <- data.frame(read.delim("data/all/combinedpathway_with_mainfunction.txt", sep = "\t"))
+  unique_df = data.frame(read.delim("data/unique/unique_combinedpathway_with_mainfunction.txt", sep = "\t"))
+  common_df = data.frame(read.delim("data/common/common_combinedpathway_with_mainfunction.txt", sep = "\t"))
 
   all_gene_df = data.frame(read.delim("data/all/rna_marker_concatenated_output.txt", sep = " "))
-  unique_gene_df = data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/unique/unique_rna_marker_concatenated_output.txt", sep = " "))
-  common_gene_df = data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/common/common_rna_marker_concatenated_output.txt", sep = " "))
+  unique_gene_df = data.frame(read.delim("data/unique/unique_rna_marker_concatenated_output.txt", sep = " "))
+  common_gene_df = data.frame(read.delim("data/common/common_rna_marker_concatenated_output.txt", sep = " "))
 
   all_gene_df = all_gene_df[all_gene_df$p_val < 0.05, ]
 
@@ -67,7 +67,7 @@ if (sys.nframe() == 0){
     wrap_plots(pht_list[[3]], ght_list[[3]], ncol = 2, widths = c(1.5,1)) /
     wrap_plots(pht_list[[4]], ght_list[[4]], ncol = 2, widths = c(1.5,1)) + plot_layout(heights = c(0.6,0.5,1,0.8,0.8)) 
 
-  #ggsave("/Users/blakechang/Programming/khoi-modrek-lab/figures/output/main.pdf",device = "pdf", plot = figure, width = 8, height = 11.5, units = "in", dpi = 300)
+  #ggsave("output/main.pdf",device = "pdf", plot = figure, width = 8, height = 11.5, units = "in", dpi = 300)
 
 
 
@@ -105,7 +105,7 @@ if (sys.nframe() == 0){
 
   pdf("output/main.pdf", width = 11, height = 8.5)
   print(figure1)
-  print(figure2)
+  print(figure2)  # This is very badly formatted, for script putting each plot on a separate page, check scripts/atac.R
   dev.off()
 
 

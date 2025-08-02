@@ -35,7 +35,7 @@ atac_venn_diagram = function(cluster){
 }
 if (sys.nframe() == 0){
   venn = venn_diagram(c(0,1,2,3))
-  ggsave("/Users/blakechang/Programming/khoi-modrek-lab/figures/output/venndiagrams.pdf", venn, device = "pdf")
+  ggsave("output/venndiagrams.pdf", venn, device = "pdf")
   plot_list = list()
   atac_plot_list = list()
   for (i in 0:3){
@@ -44,7 +44,7 @@ if (sys.nframe() == 0){
   }
   plot_list[[5]] = venn_diagram(c(0,1,2,3))
   atac_plot_list[[5]] = atac_venn_diagram(c(0,1,2,3))
-  pdf("/Users/blakechang/Programming/khoi-modrek-lab/figures/output/venndiagrams.pdf")
+  pdf("output/venndiagrams.pdf")
   grid.arrange(grobs = plot_list, nrow = 2)
   grid.arrange(grobs = atac_plot_list, nrow = 2)
   dev.off()

@@ -7,9 +7,9 @@ library(glue)
 library(gridExtra)
 library(patchwork)
 
-source("/Users/blakechang/Programming/khoi-modrek-lab/figures/scripts/pathwaygeneht.R", echo = TRUE)
-source("/Users/blakechang/Programming/khoi-modrek-lab/figures/scripts/venndiagrams.R", echo = TRUE)
-source("/Users/blakechang/Programming/khoi-modrek-lab/figures/scripts/venndiagrams.R", echo = TRUE)
+source("scripts/pathwaygeneht.R", echo = TRUE)
+source("scripts/venndiagrams.R", echo = TRUE)
+source("scripts/venndiagrams.R", echo = TRUE)
 
 change_column_name = function(df, old, new){
   colnames(df)[which(names(df) == old)] = new
@@ -21,7 +21,7 @@ change_column_name = function(df, old, new){
 if (sys.nframe() == 0){
   ###Preprocessing and Setup ----------------------------------------------------------  
   ### Load in Data
-  all_df = data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/all/combinedpathway_with_mainfunction.txt", sep = "\t"))
+  all_df = data.frame(read.delim("data/all/combinedpathway_with_mainfunction.txt", sep = "\t"))
   hf2354_df = data.frame(read.delim("data/validation/hf2354_C2_CP-REACTOME_pathway_with_mainfunction.txt")) %>% mutate(Cluster =1) %>% mutate(DoseComparison = "Fractionated")
   hf3016_df = data.frame(read.delim("data/validation/hf3016_C2_CP-REACTOME_pathway_with_mainfunction.txt")) %>% mutate(Cluster =1) %>% mutate(DoseComparison = "Fractionated")
 
@@ -45,7 +45,7 @@ if (sys.nframe() == 0){
   hf2354_df = hf2354_df[!is.na(hf2354_df$NES) | !is.na(hf2354_df$pval), ]
   hf3016_df = hf3016_df[!is.na(hf3016_df$NES) | !is.na(hf3016_df$pval), ]
 
-  category_names = c("Apoptosis", "DNA Repair", "Epigenetics", "Extracellular Matrix Formation", "Immune System")
+  category_names = c("Apoptosis", "DNA Repair", "Epigenetics", "Extracellular Matrix Formation", "Innate Immune System", "Adaptive Immune System", "Cytokine Signalling Immune System")
 
 
   all_df_pathways = unique(all_df[all_df$Cluster == 1, ]$common_name)

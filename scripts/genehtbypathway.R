@@ -85,8 +85,8 @@ make_gene_heatmap_by_pathway <- function(df,
 
       if (category == "Extracellular Matrix Formation"){category  <- "ECM Formation"}
       # Rows to highlight
-      uniqueRows <- data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/unique/unique_rna_marker_concatenated_output.txt", sep = " "))$gene
-      commonRows <- data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/common/common_rna_marker_concatenated_output.txt", sep = " "))$gene
+      uniqueRows <- data.frame(read.delim("data/unique/unique_rna_marker_concatenated_output.txt", sep = " "))$gene
+      commonRows <- data.frame(read.delim("data/common/common_rna_marker_concatenated_output.txt", sep = " "))$gene
 
       # Set stylings for row names and make our selected rows unique
       rowAnno <- create_highlighted_row_anno(mat, gpar$rownames_fs, uniqueRows, commonRows) 
@@ -137,15 +137,15 @@ pick_important_genes = function(gene_df){
 }
 
 if (sys.nframe() == 0){
-  category_names = c("Apoptosis", "DNA Repair", "Epigenetics", "Extracellular Matrix Formation", "Immune System")
+  category_names = c("Apoptosis", "DNA Repair", "Epigenetics", "Extracellular Matrix Formation", "Innate Immune System", "Adaptive Immune System", "Cytokine Signalling Immune System")
   ### Load in Data
-  all_df = data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/all/combinedpathway_with_mainfunction.txt", sep = "\t"))
-  unique_df = data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/unique/unique_combinedpathway_with_mainfunction.txt", sep = "\t"))
-  common_df = data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/common/common_combinedpathway_with_mainfunction.txt", sep = "\t"))
+  all_df = data.frame(read.delim("data/all/combinedpathway_with_mainfunction.txt", sep = "\t"))
+  unique_df = data.frame(read.delim("data/unique/unique_combinedpathway_with_mainfunction.txt", sep = "\t"))
+  common_df = data.frame(read.delim("data/common/common_combinedpathway_with_mainfunction.txt", sep = "\t"))
 
   all_gene_df = data.frame(read.delim("data/all/rna_marker_concatenated_output.txt", sep = " "))
-  unique_gene_df <- data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/unique/unique_rna_marker_concatenated_output.txt", sep = " "))
-  common_gene_df <- data.frame(read.delim("/Users/blakechang/Programming/khoi-modrek-lab/figures/data/common/common_rna_marker_concatenated_output.txt", sep = " "))
+  unique_gene_df <- data.frame(read.delim("data/unique/unique_rna_marker_concatenated_output.txt", sep = " "))
+  common_gene_df <- data.frame(read.delim("data/common/common_rna_marker_concatenated_output.txt", sep = " "))
 
   ### Filter By P value less that 0.5
   all_df = all_df[all_df$pval < 0.05, ] %>% filter(!is.na(Cluster))
